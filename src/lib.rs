@@ -27,6 +27,13 @@ where
         }
     }
 
+    pub fn capacity(&self) -> usize {
+        self.capacity
+    }
+    pub fn len(&self) -> usize {
+        self.len
+    }
+
     #[inline(always)]
     pub fn is_empty(&self) -> bool {
         self.len == 0
@@ -101,7 +108,7 @@ where
 
     pub fn peek_newest(&self) -> Option<&T> {
         if !self.is_empty() {
-            let index = (self.start - 1 + self.capacity) % self.capacity;
+            let index = (self.start + self.capacity - 1) % self.capacity;
             self.container.get(index)
         } else {
             None
@@ -179,6 +186,48 @@ mod test {
 
         assert!(v.is_empty());
         assert!(!v.is_full());
+    }
+
+    #[test]
+    fn ringvec2() {
+        let mut v = RingVec::new(3);
+
+        assert!(v.is_empty());
+        assert!(!v.is_full());
+
+        v.push_force(4);
+        v.push_force(5);
+        v.push_force(6);
+        v.push_force(7);
+
+        assert!(!v.is_empty());
+        assert!(v.is_full());
+
+        assert_eq!(v.peek_oldest(), Some(&5));
+        assert_eq!(v.peek_newest(), Some(&7));
+        assert_eq!(v.pop(), Some(5));
+
+        assert!(!v.is_empty());
+        assert!(!v.is_full());
+
+        assert_eq!(v.pop(), Some(6));
+        assert_eq!(v.pop(), Some(7));
+
+        assert!(v.is_empty());
+        assert!(!v.is_full());
+    }
+
+    #[test]
+    fn ringvec3() {
+        let mut v = RingVec::new(3);
+        v.push_force(4);
+        v.push_force(5);
+        v.push_force(6);
+        v.push_force(7);
+        v.push_force(8);
+        v.push_force(9);
+
+        v.peek_newest();
     }
 
     #[test]

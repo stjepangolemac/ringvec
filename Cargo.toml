@@ -1,7 +1,14 @@
 [package]
 name = "ringvec"
 version = "0.1.0"
-description = "A simple ring buffer implementation on top of Vec"
+description = "A simple ring buffer implementation based on a vector"
+homepage = "https://github.com/stjepangolemac/ringvec"
+repository = "https://github.com/stjepangolemac/ringvec"
+documentation = "https://docs.rs/ringvec"
+readme = "README.md"
+license-file = "LICENSE"
+keywords = ["ring", "buffer", "vec"]
+categories = ["data-structures"]
 edition = "2018"
 
 [dev-dependencies]
