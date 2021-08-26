@@ -1,6 +1,6 @@
 # ringvec
 
-[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/stjepangolemac/ringvec/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/stjepangolemac/ringvec/blob/main/LICENSE)
 
 A simple ring buffer implementation based on a vector. No dependencies except criterion
 for benchmarking.
