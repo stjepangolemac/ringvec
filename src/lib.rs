@@ -46,18 +46,24 @@ where
 
     #[inline(always)]
     fn inc_start(&mut self) {
+        if self.capacity == 0 {
+            return;
+        }
         self.start += 1;
         self.start %= self.capacity;
     }
 
     #[inline(always)]
     fn inc_end(&mut self) {
+        if self.capacity == 0 {
+            return;
+        }
         self.end += 1;
         self.end %= self.capacity;
     }
 
     pub fn push(&mut self, element: T) {
-        if self.is_full() {
+        if self.capacity == 0 || self.is_full() {
             return;
         }
 
@@ -70,6 +76,9 @@ where
     }
 
     pub fn push_force(&mut self, element: T) {
+        if self.capacity == 0 {
+            return;
+        }
         let cell = self.container.get_mut(self.start).unwrap();
 
         *cell = element;
@@ -84,6 +93,9 @@ where
     }
 
     pub fn pop(&mut self) -> Option<T> {
+        if self.capacity == 0 {
+            return None;
+        }
         if !self.is_empty() {
             let cell = self.container.get_mut(self.end).unwrap();
 
@@ -99,6 +111,9 @@ where
     }
 
     pub fn peek_oldest(&self) -> Option<&T> {
+        if self.capacity == 0 {
+            return None;
+        }
         if !self.is_empty() {
             self.container.get(self.end)
         } else {
@@ -107,6 +122,9 @@ where
     }
 
     pub fn peek_newest(&self) -> Option<&T> {
+        if self.capacity == 0 {
+            return None;
+        }
         if !self.is_empty() {
             let index = (self.start + self.capacity - 1) % self.capacity;
             self.container.get(index)
@@ -134,7 +152,7 @@ impl<'ring, T> Iterator for RingVecIterator<'ring, T> {
     type Item = &'ring T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.length == 0 {
+        if self.length == 0 || self.ringvec.capacity == 0 {
             None
         } else {
             let result = self.ringvec.container.get(self.current);
@@ -250,5 +268,30 @@ mod test {
         assert_eq!(i.next(), Some(&3));
         assert_eq!(i.next(), None);
         assert_eq!(i.next(), None);
+    }
+
+    #[test]
+    fn zero_capacity_is_safe() {
+        let mut v = RingVec::<i32>::new(0);
+
+        assert_eq!(v.capacity(), 0);
+        assert_eq!(v.len(), 0);
+        assert!(v.is_empty());
+        assert!(v.is_full());
+
+        v.push(1);
+        v.push_force(2);
+
+        assert_eq!(v.len(), 0);
+        assert!(v.is_empty());
+        assert!(v.is_full());
+
+        assert_eq!(v.pop(), None);
+        assert_eq!(v.peek_oldest(), None);
+        assert_eq!(v.peek_newest(), None);
+
+        let mut iter = v.iter();
+        assert_eq!(iter.next(), None);
+        assert_eq!(iter.size_hint(), (0, Some(0)));
     }
 }
